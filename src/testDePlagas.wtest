@@ -1,0 +1,89 @@
+import plagas.*
+import elementos.*
+
+describe "plagas" {
+	
+	const cucarachas1 = new Cucarachas(poblacion = 30, pesoPromedio = 8)
+	const cucarachas2 = new Cucarachas(poblacion = 30, pesoPromedio = 15)
+	
+	const pulgas = new Pulgas(poblacion = 20)
+	
+	const garrapatas = new Garrapatas(poblacion = 20)
+	
+	const mosquitos1 = new Mosquitos(poblacion = 9)
+	const mosquitos2 = new Mosquitos(poblacion = 20)
+	const mosquitos3 = new Mosquitos(poblacion = 27)
+	
+	
+	test "test cucarachas"{
+		assert.equals(15, cucarachas1.nivelDeDanio())
+		assert.notThat(cucarachas1.transmiteEnfermedades())	// Cumple la condicion de poblaciòn pero no la de peso promedio.
+		assert.that(cucarachas2.transmiteEnfermedades()) 	// Cumple la condicion de poblaciòn y tambien la de peso promedio.
+	}
+	
+	test "test pulgas"{
+		assert.equals(40, pulgas.nivelDeDanio())
+		assert.that(pulgas.transmiteEnfermedades()) // Cumple la condicion de poblaciòn.
+	}
+	
+	test "test garrapatas"{
+		assert.equals(40, garrapatas.nivelDeDanio())
+		assert.that(garrapatas.transmiteEnfermedades())
+	}
+	
+	test "test mosquitos"{
+		assert.equals(9, mosquitos1.nivelDeDanio())
+		assert.notThat(mosquitos1.transmiteEnfermedades())	// Cumple la condiciòn de multiplo de 3 pero no la de poblaciòn.
+		assert.notThat(mosquitos2.transmiteEnfermedades())	// Cumple la condiciòn de poblaciòn pero no la de multiplo de 3.
+		assert.that(mosquitos3.transmiteEnfermedades())		// Cumple ambas condiciones.
+	}
+}
+
+describe "Efectos sobre elementos y plagas" {
+	
+	const hogar1 = new Hogar(confort = 100, mugre = 25)
+	const hogar2 = new Hogar(confort = 30, mugre = 150)
+	
+	const huerta1 = new Huerta(capacidadProd = 100)
+	
+	const elNegro = new Mascota(salud = 450)
+	
+	const cucarachas = new Cucarachas(poblacion = 30, pesoPromedio = 8)
+	const pulgas = new Pulgas(poblacion = 20)
+	const garrapatas = new Garrapatas(poblacion = 20)
+	const mosquitos = new Mosquitos(poblacion = 50)
+
+	test "hogar y cucarachas afectadas" {
+		assert.notThat(cucarachas.transmiteEnfermedades())
+		
+		cucarachas.afectarElemento(hogar1) //(mugre = 25) + (niveDeDanio=15)
+		assert.equals(40, hogar1.mugre())
+		
+		assert.equals(33, cucarachas.poblacion())
+		assert.equals(10, cucarachas.pesoPromedio())
+		assert.that(cucarachas.transmiteEnfermedades())
+	}
+	
+	test "huerta y pulgas afectadas" {
+		pulgas.afectarElemento(huerta1) // (capacidadProd = 100) - (nivelDeDanio * 0.1 = 4) - (10 porque la plaga transmite enfermedades)
+		assert.equals(86, huerta1.capacidadProd())
+		
+		assert.equals(22, pulgas.poblacion())
+	}
+	
+	test "mascota y garrapatas afectadas" {
+		cucarachas.afectarElemento(elNegro) // No le afecta porque la plaga no transmite enfermedades
+		assert.equals(450, elNegro.salud())
+		garrapatas.afectarElemento(elNegro) // (salud = 450) - (nivelDeDanio = 40) *garrapatas si transmite enfermedades*
+		assert.equals(410, elNegro.salud())
+		
+		assert.equals(24, garrapatas.poblacion())
+	}
+	
+	test "mosquitos afectados" {
+		mosquitos.afectarElemento(hogar2) // (mugre = 150) + (nivelDeDanio = 50)
+		assert.equals(200, hogar2.mugre())
+		
+		assert.equals(55, mosquitos.poblacion())
+	}
+}

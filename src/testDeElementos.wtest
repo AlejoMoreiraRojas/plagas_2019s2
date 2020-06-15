@@ -1,0 +1,41 @@
+import elementos.*
+
+describe "elementos"{
+	const hogar1 = new Hogar(confort = 100, mugre = 25) // Es bueno
+	const hogar2 = new Hogar(confort = 30, mugre = 150)	// No es bueno
+	const hogar3 = new Hogar(confort = 100, mugre = 60)	// No es bueno
+	
+	const huerta1 = new Huerta(capacidadProd = 100)		// No es bueno
+	const huerta2 = new Huerta(capacidadProd = 600)		// Es bueno
+	const huerta3 = new Huerta(capacidadProd = 210)		// Es bueno
+	
+	
+	const firulais = new Mascota(salud = 100)			// No es bueno
+	const elNegro = new Mascota(salud = 450)			// Es bueno
+	const dulcinea = new Mascota(salud = 300)			// Es bueno
+	
+	const barrio1 = new Barrio()						// Es copado
+	const barrio2 = new Barrio()						// No es copado
+	
+	fixture{
+		barrio1.agregar([hogar1, hogar2, huerta1, huerta2, huerta3, elNegro, dulcinea])
+		barrio2.agregar([hogar1, hogar2, hogar3, huerta1, huerta2, firulais, dulcinea])
+	}
+
+	test "elementos buenos" {
+
+		assert.that(hogar1.esBueno())
+		assert.notThat(hogar2.esBueno())
+
+		assert.notThat(huerta1.esBueno())
+		assert.that(huerta2.esBueno())
+		
+		assert.notThat(firulais.esBueno())
+		assert.that(elNegro.esBueno())
+	}
+	
+	test "barrios copados"{
+		assert.that(barrio1.esCopado())
+		assert.notThat(barrio2.esCopado())
+	}
+}
